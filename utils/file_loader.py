@@ -1,0 +1,79 @@
+from models.proceso import Proceso
+
+TIPOS_CLIENTE_VALIDOS = [
+    "VIP",
+    "AdultoMayor",
+    "Embarazada",
+    "Regular",
+    "Foraneo"
+]
+
+
+def cargar_procesos_txt(ruta_archivo):
+
+    procesos = []
+
+    try:
+        with open(ruta_archivo, "r") as archivo:
+            lineas = archivo.readlines()
+    except FileNotFoundError:
+        raise Exception("No se encontró el archivo especificado.")
+
+    numero_linea = 0
+
+    for linea in lineas:
+
+        numero_linea += 1
+        linea = linea.strip()
+
+        # Ignorar líneas vacías
+        if not linea:
+            continue
+
+        partes = linea.split(",")
+
+        if len(partes) < 3:
+            raise Exception(
+                f"Error en línea {numero_linea}: formato inválido."
+            )
+
+        id_proceso = partes[0].strip()
+
+        # Validar números
+        try:
+            llegada = int(partes[1])
+            rafaga = int(partes[2])
+        except ValueError:
+            raise Exception(
+                f"Error en línea {numero_linea}: llegada y ráfaga deben ser números."
+            )
+
+        if llegada < 0 or rafaga <= 0:
+            raise Exception(
+                f"Error en línea {numero_linea}: valores negativos no permitidos."
+            )
+
+        # Tipo cliente opcional
+        tipo_cliente = "Regular"
+
+        if len(partes) >= 4:
+            tipo_cliente = partes[3].strip()
+
+            if tipo_cliente not in TIPOS_CLIENTE_VALIDOS:
+                raise Exception(
+                    f"Error en línea {numero_linea}: tipo de cliente inválido."
+                )
+
+        proceso = Proceso(
+            id_proceso,
+            llegada,
+            rafaga,
+            tipo_cliente=tipo_cliente
+        )
+
+        procesos.append(proceso)
+
+    if len(procesos) == 0:
+        raise Exception("El archivo no contiene procesos válidos.")
+
+    return procesos

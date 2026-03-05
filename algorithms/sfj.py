@@ -1,4 +1,5 @@
 from utils.metrics import calcular_metricas
+from utils.detalle_procesos import generar_detalle_procesos
 
 def ejecutar_sfj(procesos):
     """
@@ -44,8 +45,10 @@ def ejecutar_sfj(procesos):
         procesos_pendientes.remove(proceso)
         procesos_completados.append(proceso)
     metricas = calcular_metricas(procesos_completados, tiempo_actual)
+    detalle = generar_detalle_procesos(procesos_completados)
 
-    return{
-        "gantt": gantt,
-        "metricas": metricas
+    return {
+    "gantt": gantt,
+    "metricas": metricas,
+    "procesos": detalle
     }

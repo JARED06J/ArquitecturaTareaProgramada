@@ -1,4 +1,5 @@
 from utils.metrics import calcular_metricas
+from utils.detalle_procesos import generar_detalle_procesos
 
 def ejecutar_fifo(procesos):
 
@@ -44,8 +45,10 @@ def ejecutar_fifo(procesos):
     #Calcular metricas
 
     metricas = calcular_metricas(procesos_ordenados, tiempo_actual)
+    detalle = generar_detalle_procesos(procesos_ordenados)
 
-    return{
+    return {
         "gantt": gantt,
-        "metricas": metricas
+        "metricas": metricas,
+        "procesos": detalle
     }
