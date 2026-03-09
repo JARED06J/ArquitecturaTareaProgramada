@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenido | TicketsBank</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='bienvenida.css') }}">
+</head>
+<body>
+
+<header class="hero text-center">
+    <div class="container">
+        <h1 class="display-3 fw-bold">Tickets<span style="color: var(--coral-claro);">Bank</span></h1>
+        <p class="lead opacity-90">Entiende la ciencia detrás de tu turno en el banco</p>
+        <a href="{{ url_for('index') }}" class="btn btn-start mt-4 shadow-lg">
+            Comenzar Simulación <i class="fas fa-chevron-right ms-2"></i>
+        </a>
+    </div>
+</header>
+
+<main class="container my-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold">Nuestros Algoritmos de Atención</h2>
+        <p class="text-muted">Optimizamos cada segundo para que tu espera sea mínima.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card card-algo p-4 shadow-sm text-center">
+                <div class="icon-box"><i class="fas fa-users"></i></div>
+                <h4 class="fw-bold">FIFO</h4>
+                <p class="text-muted">"El que llega primero, se atiende primero".</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-algo p-4 shadow-sm text-center">
+                <div class="icon-box"><i class="fas fa-bolt"></i></div>
+                <h4 class="fw-bold">SJF</h4>
+                <p class="text-muted">Prioriza los trámites más rápidos para desocupar la fila velozmente.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card card-algo p-4 shadow-sm text-center">
+                <div class="icon-box"><i class="fas fa-clock"></i></div>
+                <h4 class="fw-bold">Round Robin</h4>
+                <p class="text-muted">"Divide el tiempo en intervalos (quantums) iguales para que todos los tiquetes avancen a la vez.".</p>
+            </div>
+        </div>
+    </div>
+    <div class="mt-5 p-4 bg-white rounded-4 shadow-sm border-start border-5" style="border-color: #EE6457 !important;">
+        <h5><i class="fas fa-info-circle me-2"></i> Instrucciones</h5>
+        <ul class="mb-0">
+            <li><strong>Paso 1:</strong> Ingresa los tiquetes manualmente o sube un archivo <code>.txt</code>.</li>
+            <li><strong>Paso 2:</strong> Configura qué algoritmo usará la fila de Prioridad Alta y la Fila General.</li>
+            <li><strong>Paso 3:</strong> ¡Analiza el Diagrama de Gantt y los tiempos de retorno!</li>
+        </ul>
+    </div>
+</main>
+</body>
+</html>
