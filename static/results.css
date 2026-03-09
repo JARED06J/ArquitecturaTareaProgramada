@@ -1,0 +1,94 @@
+:root {
+    --deep-blue: #034C5F;
+    --soft-blue: #97BEC6;
+    --coral: #EE6457;
+    --peach: #F9C4BA;
+    --off-white: #FDF5F4;
+}
+
+.results-header {
+    background: linear-gradient(135deg, var(--deep-blue) 0%, #056a85 100%);
+    color: white;
+    padding: 1.5rem 0;
+}
+
+.btn-back {
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid var(--peach);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.btn-back:hover {
+    background-color: var(--coral);
+    color: white;
+    border-color: var(--coral);
+}
+
+/* Tarjetas de KPI */
+.kpi-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+    border-bottom: 5px solid var(--soft-blue);
+    transition: transform 0.3s;
+}
+
+.kpi-card:hover { transform: translateY(-5px); }
+
+.kpi-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #888;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.kpi-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--deep-blue);
+}
+
+.kpi-value small { font-size: 1rem; opacity: 0.5; }
+
+/* Tabla Estilizada */
+.stats-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+.stats-table th {
+    color: #999;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    border-bottom: 2px solid var(--off-white);
+}
+
+.stats-table td {
+    background: #fcfcfc;
+    padding: 15px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+}
+
+.stats-table tr td:first-child { border-radius: 10px 0 0 10px; border-left: 1px solid #eee; }
+.stats-table tr td:last-child { border-radius: 0 10px 10px 0; border-right: 1px solid #eee; }
+
+.bg-coral { background-color: var(--coral); color: white; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; }
+.bg-soft-blue { background-color: var(--soft-blue); color: var(--deep-blue); padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; }
+
+.section-title {
+    font-weight: 700;
+    color: var(--deep-blue);
+    letter-spacing: -0.5px;
+}
