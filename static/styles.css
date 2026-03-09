@@ -1,0 +1,131 @@
+:root {
+    --deep-blue: #034C5F;
+    --soft-blue: #97BEC6;
+    --coral: #EE6457;
+    --peach: #F9C4BA;
+    --off-white: #FDF5F4;
+}
+
+body {
+    background-color: var(--off-white);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    color: var(--deep-blue);
+    margin: 0;
+}
+
+/* Cabecera TicketsBank Premium */
+.header-premium {
+    background-color: var(--deep-blue);
+    color: white;
+    padding: 3.5rem 1rem;
+    text-align: center;
+    border-radius: 0 0 30px 30px;
+    box-shadow: 0 4px 20px rgba(3, 76, 95, 0.2);
+}
+
+.logo-icon-box {
+    background: rgba(238, 100, 87, 0.15); /* Coral muy suave */
+    padding: 20px;
+    border-radius: 20px;
+    display: inline-block;
+    border: 2px solid var(--coral);
+    margin-bottom: 15px;
+}
+
+.logo-icon {
+    color: var(--coral);
+    font-size: 3.5rem;
+    position: relative;
+}
+
+/* El efecto de tiquete u onda dinámica */
+.logo-icon::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 30px;
+    background: linear-gradient(135deg, rgba(238, 100, 87, 0.5) 0%, rgba(238, 100, 87, 0) 80%);
+    border-radius: 0 30px 30px 0;
+    top: -10px;
+    right: -40px;
+    transform: rotate(-15deg);
+}
+
+/* Contenedores */
+.container-main {
+    max-width: 1100px;
+    margin: -50px auto 60px;
+    padding: 0 20px;
+}
+
+.card-panel {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+}
+
+.section-label {
+    color: var(--deep-blue);
+    border-left: 5px solid var(--coral);
+    padding-left: 15px;
+    margin: 35px 0 20px;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.95rem;
+}
+
+/* Tablas con Azul Claro */
+.table-custom {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--soft-blue);
+}
+
+.table-custom thead {
+    background-color: var(--soft-blue);
+    color: var(--deep-blue);
+}
+
+/* Botón Coral Vibrante de la paleta */
+.btn-tickets {
+    background-color: var(--coral);
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    width: 100%;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+}
+
+.btn-tickets:hover {
+    transform: translateY(-3px);
+    background-color: #d85449; /* Coral un poco más oscuro */
+    box-shadow: 0 8px 15px rgba(238, 100, 87, 0.3);
+}
+
+.config-item {
+    background: var(--off-white);
+    padding: 25px;
+    border-radius: 15px;
+    border: 1px solid var(--peach);
+}
+
+.btn-add-ticket {
+    background: transparent;
+    border: 2px dashed var(--soft-blue);
+    color: var(--deep-blue);
+    padding: 12px;
+    width: 100%;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-top: 15px;
+}
+
+.btn-add-ticket:hover {
+    background: var(--peach);
+    border-color: var(--coral);
+}
+
