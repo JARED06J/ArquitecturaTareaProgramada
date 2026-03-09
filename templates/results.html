@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resultados TicketsBank | MLQ</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='result.css') }}">
+    <style>
+        .card-kpi { transition: transform 0.3s; border: none; }
+        .card-kpi:hover { transform: translateY(-5px); }
+        .bg-petroleo { background: linear-gradient(135deg, #034C5F 0%, #046b85 100%); }
+        .border-coral { border-bottom: 5px solid #EE6457 !important; }
+        .text-coral { color: #EE6457; }
+    </style>
+</head>
+<body class="bg-light">
+
+    <header class="results-header shadow-sm bg-petroleo text-white py-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-6 fw-bold mb-0">Tickets<span style="color: #F9C4BA;">Bank</span></h1>
+                <p class="mb-0 opacity-75">Reporte de Eficiencia de Atención</p>
+            </div>
+            <a href="/simulador" class="btn btn-outline-light rounded-pill px-4 shadow-sm">
+                <i class="fa-solid fa-rotate-left me-2"></i>Nueva Simulación
+            </a>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card card-kpi shadow-sm p-4 text-center rounded-4">
+                    <span class="text-uppercase text-muted small fw-bold">Atención Total</span>
+                    <h2 class="display-5 fw-bold mb-0">{{ procesos|length }}</h2>
+                    <small class="text-muted">Tiquetes procesados</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-kpi shadow-sm p-4 text-center rounded-4">
+                    <span class="text-uppercase text-muted small fw-bold">Retorno Promedio</span>
+                    <h2 class="display-5 fw-bold mb-0">{{ promedio_retorno }} <small class="fs-6">min</small></h2>
+                    <small class="text-muted">Tiempo total en sucursal</small>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-kpi shadow-sm p-4 text-center rounded-4 border-coral">
+                    <span class="text-uppercase text-muted small fw-bold">Espera Promedio</span>
+                    <h2 class="display-5 fw-bold mb-0 text-coral">{{ promedio_espera }} <small class="fs-6">min</small></h2>
+                    <small class="text-muted">Tiempo antes de caja</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 mb-5">
+            <div class="card-body p-4">
+                <h5 class="mb-4 fw-bold"><i class="fa-solid fa-chart-gantt me-2 text-coral"></i>Cronograma de Atención</h5>
+                <div style="height: 300px;"><canvas id="ganttChart"></canvas></div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 rounded-4 mb-5">
+            <div class="card-body p-4">
+                <h5 class="mb-4 fw-bold"><i class="fa-solid fa-list-check me-2 text-coral"></i>Detalle de Tiquetes</h5>
+                <div class="table-responsive">
+                    <table class="table align-middle table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Categoría</th>
+                                <th>Llegada</th>
+                                <th>Inicio</th>
+                                <th>Fin</th>
+                                <th>Espera</th>
+                                <th>Retorno</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in procesos %}
+                            <tr>
+                                <td class="fw-bold">{{ p.id }}</td>
+                                <td>
+                                    {% set es_prioritario = p.tipo_cliente in ['VIP', 'AdultoMayor', 'Embarazada'] %}
+                                    <span class="badge rounded-pill px-3" style="background-color: {{ '#EE6457' if es_prioritario else '#97BEC6' }};">
+                                        {{ p.tipo_cliente }}
+                                    </span>
+                                </td>
+                                <td>{{ p.tiempo_llegada }} min</td>
+                                <td>{{ p.inicio }} min</td>
+                                <td>{{ p.fin }} min</td>
+                                <td class="{{ 'fw-bold text-danger' if p.espera > 10 else '' }}">{{ p.espera }} min</td>
+                                <td>{{ p.retorno }} min</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center my-5 p-4 bg-white rounded-4 shadow-sm border">
+            <p class="text-muted mb-3">¿Deseas descargar el registro del hitorial?</p>
+            <a href="{{ url_for('descargar') }}" class="btn btn-outline-success btn-lg rounded-pill px-5">
+                <i class="fa-solid fa-file-arrow-down me-2"></i>Descargar (.txt)
+            </a>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const datos = {{ procesos_js | tojson }};
+        const ctx = document.getElementById('ganttChart').getContext('2d');
+
+        const datasets = datos.map(p => ({
+            label: p.id,
+            data: [[p.inicio, p.fin]],
+            backgroundColor: (['VIP', 'AdultoMayor', 'Embarazada'].includes(p.tipo)) ? '#EE6457' : '#97BEC6',
+            borderColor: '#034C5F',
+            borderWidth: 1,
+            borderRadius: 5,
+            barPercentage: 0.8
+        }));
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: { labels: ['Línea de Tiempo'], datasets: datasets },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, title: { display: true, text: 'Minutos' } },
+                    y: { stacked: true, display: false }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
