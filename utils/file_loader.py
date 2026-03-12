@@ -56,7 +56,7 @@ def cargar_procesos_txt(ruta_archivo):
             id_proceso,
             llegada,
             rafaga,
-            tipo_cliente
+            tipo_cliente=tipo_cliente
         )
 
         procesos.append(proceso)
