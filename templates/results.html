@@ -8,11 +8,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='result.css') }}">
     <style>
-        .card-kpi { transition: transform 0.3s; border: none; }
+        .card-kpi { transition: transform 0.3s; border: none; min-height: 160px; display: flex; flex-direction: column; justify-content: center; }
         .card-kpi:hover { transform: translateY(-5px); }
         .bg-petroleo { background: linear-gradient(135deg, #034C5F 0%, #046b85 100%); }
         .border-coral { border-bottom: 5px solid #EE6457 !important; }
+        .border-success-custom { border-bottom: 5px solid #28a745 !important; }
         .text-coral { color: #EE6457; }
+        
+        .chart-container {
+            width: 100%;
+            height: 500px; /* Aumentado para mejor visibilidad */
+            overflow-x: auto;
+        }
+
+        /* Estilo para el scroll de la tabla */
+        .table-responsive {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .table thead th { position: sticky; top: 0; background: #f8f9fa; z-index: 10; }
     </style>
 </head>
 <body class="bg-light">
@@ -31,44 +45,54 @@
 
     <main class="container my-5">
         <div class="row g-4 mb-5">
-            <div class="col-md-4">
-                <div class="card card-kpi shadow-sm p-4 text-center rounded-4">
+            <div class="col-md-3">
+                <div class="card card-kpi shadow-sm p-3 text-center rounded-4">
                     <span class="text-uppercase text-muted small fw-bold">Atención Total</span>
-                    <h2 class="display-5 fw-bold mb-0">{{ procesos|length }}</h2>
+                    <h2 class="display-6 fw-bold mb-0">{{ procesos|length }}</h2>
                     <small class="text-muted">Tiquetes procesados</small>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card card-kpi shadow-sm p-4 text-center rounded-4">
+            <div class="col-md-3">
+                <div class="card card-kpi shadow-sm p-3 text-center rounded-4">
                     <span class="text-uppercase text-muted small fw-bold">Retorno Promedio</span>
-                    <h2 class="display-5 fw-bold mb-0">{{ promedio_retorno }} <small class="fs-6">min</small></h2>
+                    <h2 class="display-6 fw-bold mb-0">{{ promedio_retorno }} <small class="fs-6">min</small></h2>
                     <small class="text-muted">Tiempo total en sucursal</small>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="card card-kpi shadow-sm p-4 text-center rounded-4 border-coral">
+            <div class="col-md-3">
+                <div class="card card-kpi shadow-sm p-3 text-center rounded-4 border-coral">
                     <span class="text-uppercase text-muted small fw-bold">Espera Promedio</span>
-                    <h2 class="display-5 fw-bold mb-0 text-coral">{{ promedio_espera }} <small class="fs-6">min</small></h2>
+                    <h2 class="display-6 fw-bold mb-0 text-coral">{{ promedio_espera }} <small class="fs-6">min</small></h2>
                     <small class="text-muted">Tiempo antes de caja</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card-kpi shadow-sm p-3 text-center rounded-4 border-success-custom">
+                    <span class="text-uppercase text-muted small fw-bold">Eficiencia del Banco</span>
+                    <h2 class="display-6 fw-bold mb-0 text-success-custom">{{ utilizacion }}%</h2>
+                    <small class="text-muted">Ocupación de cajeros</small>
                 </div>
             </div>
         </div>
 
         <div class="card shadow-sm border-0 rounded-4 mb-5">
             <div class="card-body p-4">
-                <h5 class="mb-4 fw-bold"><i class="fa-solid fa-chart-gantt me-2 text-coral"></i>Cronograma de Atención</h5>
-                <div style="height: 300px;"><canvas id="ganttChart"></canvas></div>
+                <h5 class="mb-4 fw-bold"><i class="fa-solid fa-chart-gantt me-2 text-coral"></i>Cronograma por Módulo de Atención</h5>
+                <div class="chart-container">
+                    <canvas id="ganttChart"></canvas>
+                </div>
             </div>
         </div>
 
         <div class="card shadow-sm border-0 rounded-4 mb-5">
             <div class="card-body p-4">
-                <h5 class="mb-4 fw-bold"><i class="fa-solid fa-list-check me-2 text-coral"></i>Detalle de Tiquetes</h5>
+                <h5 class="mb-4 fw-bold"><i class="fa-solid fa-list-check me-2 text-coral"></i>Detalle de Tiquetes por Cola</h5>
                 <div class="table-responsive">
                     <table class="table align-middle table-hover">
                         <thead class="table-light">
                             <tr>
                                 <th>ID</th>
+                                <th>Cola</th>
                                 <th>Categoría</th>
                                 <th>Llegada</th>
                                 <th>Inicio</th>
@@ -82,15 +106,20 @@
                             <tr>
                                 <td class="fw-bold">{{ p.id }}</td>
                                 <td>
-                                    {% set es_prioritario = p.tipo_cliente in ['VIP', 'AdultoMayor', 'Embarazada'] %}
-                                    <span class="badge rounded-pill px-3" style="background-color: {{ '#EE6457' if es_prioritario else '#97BEC6' }};">
+                                    {% set es_alta = p.tipo_cliente in ['VIP', 'AdultoMayor', 'Embarazada'] %}
+                                    <small class="{{ 'cola-alta' if es_alta else 'cola-baja' }}">
+                                        {{ "COLA 1" if es_alta else "COLA 2" }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge rounded-pill px-3" style="background-color: {{ '#EE6457' if es_alta else '#97BEC6' }};">
                                         {{ p.tipo_cliente }}
                                     </span>
                                 </td>
                                 <td>{{ p.tiempo_llegada }} min</td>
                                 <td>{{ p.inicio }} min</td>
                                 <td>{{ p.fin }} min</td>
-                                <td class="{{ 'fw-bold text-danger' if p.espera > 10 else '' }}">{{ p.espera }} min</td>
+                                <td class="{{ 'fw-bold text-danger' if p.espera > 20 else '' }}">{{ p.espera }} min</td>
                                 <td>{{ p.retorno }} min</td>
                             </tr>
                             {% endfor %}
@@ -101,7 +130,7 @@
         </div>
 
         <div class="text-center my-5 p-4 bg-white rounded-4 shadow-sm border">
-            <p class="text-muted mb-3">¿Deseas descargar el registro del hitorial?</p>
+            <p class="text-muted mb-3">¿Deseas descargar el registro del historial completo?</p>
             <a href="{{ url_for('descargar') }}" class="btn btn-outline-success btn-lg rounded-pill px-5">
                 <i class="fa-solid fa-file-arrow-down me-2"></i>Descargar (.txt)
             </a>
@@ -112,28 +141,46 @@
     <script>
         const datos = {{ procesos_js | tojson }};
         const ctx = document.getElementById('ganttChart').getContext('2d');
+        const labelsModulos = ["Módulo 1", "Módulo 2", "Módulo 3", "Módulo 4"];
 
         const datasets = datos.map(p => ({
-            label: p.id,
-            data: [[p.inicio, p.fin]],
+            label: `Ticket ${p.id}`,
+            data: [{
+                x: [p.inicio, p.fin],
+                y: p.cajero
+            }],
             backgroundColor: (['VIP', 'AdultoMayor', 'Embarazada'].includes(p.tipo)) ? '#EE6457' : '#97BEC6',
-            borderColor: '#034C5F',
+            borderColor: 'rgba(0,0,0,0.1)',
             borderWidth: 1,
-            borderRadius: 5,
-            barPercentage: 0.8
+            borderRadius: 2,
+            barThickness: 25,
         }));
 
         new Chart(ctx, {
             type: 'bar',
-            data: { labels: ['Línea de Tiempo'], datasets: datasets },
+            data: { labels: labelsModulos, datasets: datasets },
             options: {
                 indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (c) => `Ticket ${c.dataset.label}: ${c.raw.x[0]} - ${c.raw.x[1]} min`
+                        }
+                    }
+                },
                 scales: {
-                    x: { beginAtZero: true, title: { display: true, text: 'Minutos' } },
-                    y: { stacked: true, display: false }
+                    x: { 
+                        type: 'linear', 
+                        beginAtZero: true,
+                        title: { display: true, text: 'Línea de Tiempo (Minutos)' }
+                    },
+                    y: { 
+                        stacked: true, 
+                        title: { display: false }
+                    }
                 }
             }
         });
