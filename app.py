@@ -3,6 +3,7 @@ import os
 from models.proceso import Proceso
 from utils.file_loader import cargar_procesos_txt
 from algorithms.mlq import ejecutar_mlq
+from utils.metrics import calcular_metricas  
 from datetime import datetime
 
 app = Flask(__name__)
@@ -26,7 +27,7 @@ def index():
 def simular():
     lista_procesos = []
     
-    # Lógica de Carga de Datos
+    # --- Carga de Datos ---
     if 'archivo' in request.files and request.files['archivo'].filename != '':
         archivo = request.files['archivo']
         ruta = os.path.join(UPLOAD_FOLDER, archivo.filename)
@@ -49,7 +50,7 @@ def simular():
     if not lista_procesos:
         return "No se ingresaron procesos para simular."
 
-    # Configuración de Algoritmos 
+    # --- configuración de Algoritmos MLQ ---
     configuracion_colas = {
         "VIP": {"prioridad": 1, "algoritmo": request.form.get('alg_alta'), "quantum": int(request.form.get('q_alta', 2))},
         "AdultoMayor": {"prioridad": 1, "algoritmo": request.form.get('alg_alta'), "quantum": int(request.form.get('q_alta', 2))},
@@ -60,37 +61,48 @@ def simular():
 
     resultado = ejecutar_mlq(lista_procesos, configuracion_colas)
     
+    # --- Cálculo de Métricas ---
+    tiempo_total_simulacion = max(p.fin for p in resultado) if resultado else 0
+    
+    metricas = calcular_metricas(resultado, tiempo_total_simulacion)
+    
     procesos_json = []
-    total_espera = 0
-    total_retorno = 0
+    modulos = ["Módulo 1", "Módulo 2", "Módulo 3", "Módulo 4"]
 
-    for p in resultado:
-        total_espera += p.espera
-        total_retorno += p.retorno
+    for i, p in enumerate(resultado):
+        # Asignamos cajero/módulo
+        p.cajero = modulos[i % len(modulos)]
+        
+        # Clasificamos cola para la tabla
+        p.cola = "COLA 1" if p.tipo_cliente in ['VIP', 'AdultoMayor', 'Embarazada'] else "COLA 2"
+        
         procesos_json.append({
-            'id': p.id, 'inicio': p.inicio, 'fin': p.fin,
-            'tipo': p.tipo_cliente, 'espera': p.espera, 'retorno': p.retorno
+            'id': p.id, 
+            'inicio': p.inicio, 
+            'fin': p.fin,
+            'tipo': p.tipo_cliente, 
+            'espera': p.espera, 
+            'retorno': p.retorno,
+            'cajero': p.cajero
         })
 
-    prom_espera = round(total_espera / len(resultado), 2) if resultado else 0
-    prom_retorno = round(total_retorno / len(resultado), 2) if resultado else 0
-
-    # GUARDAR EN HISTORIAL txt
+    # --- Guardar en Historial ---
     ahora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     es_nuevo = not os.path.exists(HISTORIAL_FILE)
 
     with open(HISTORIAL_FILE, "a", encoding="utf-8") as f:
         if es_nuevo:
-            # Encabezados para que Excel reconozca las columnas
-            f.write("Fecha_Hora,Total_Tiquetes,Promedio_Espera,Promedio_Retorno\n")
-        f.write(f"{ahora},{len(resultado)},{prom_espera},{prom_retorno}\n")
+            f.write("Fecha_Hora,Total_Tiquetes,Promedio_Espera,Promedio_Retorno,Eficiencia\n")
+        f.write(f"{ahora},{len(resultado)},{metricas['tiempo_promedio_espera']},{metricas['tiempo_promedio_retorno']},{metricas['utilizacion_cpu']}%\n")
 
+    # --- Renderizado de Resultados ---
     return render_template(
         "results.html", 
         procesos=resultado, 
         procesos_js=procesos_json, 
-        promedio_espera=prom_espera, 
-        promedio_retorno=prom_retorno
+        promedio_espera=metricas['tiempo_promedio_espera'], 
+        promedio_retorno=metricas['tiempo_promedio_retorno'],
+        utilizacion=metricas['utilizacion_cpu']
     )
 
 @app.route('/descargar')
