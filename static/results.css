@@ -29,7 +29,6 @@
     border-color: var(--coral);
 }
 
-/* Tarjetas de KPI */
 .kpi-card {
     background: white;
     border-radius: 15px;
@@ -59,7 +58,6 @@
 
 .kpi-value small { font-size: 1rem; opacity: 0.5; }
 
-/* Tabla Estilizada */
 .stats-table {
     width: 100%;
     border-collapse: separate;
@@ -91,4 +89,52 @@
     font-weight: 700;
     color: var(--deep-blue);
     letter-spacing: -0.5px;
+}
+
+.table-responsive {
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 10px;
+}
+
+.stats-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 10;
+}
+
+.text-danger-custom {
+    color: var(--coral);
+    font-weight: bold;
+}
+
+.cola-alta {
+    color: var(--coral) !important;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.cola-baja {
+    color: #28a745 !important; 
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.text-success-custom {
+    color: #28a745 !important;
+}
+
+.border-success-custom {
+    border-bottom: 5px solid #28a745 !important;
+}
+
+.badge-prioritario {
+    background-color: var(--coral) !important;
+    color: white !important;
+}
+
+.badge-regular {
+    background-color: var(--soft-blue) !important;
+    color: var(--deep-blue) !important;
 }
