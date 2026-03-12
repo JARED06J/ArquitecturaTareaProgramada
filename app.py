@@ -44,7 +44,7 @@ def simular():
 
         for i in range(len(ids)):
             if ids[i].strip():
-                p = Proceso(ids[i], int(llegadas[i]), int(rafagas[i]), tipos[i])
+                p = Proceso(ids[i], int(llegadas[i]),int(llegadas[i]), int(rafagas[i]), tipo_cliente=tipos[i])
                 lista_procesos.append(p)
 
     if not lista_procesos:
